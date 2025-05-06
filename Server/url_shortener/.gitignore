@@ -25,3 +25,11 @@ db.sqlite3
 # IDE and system files
 .cache/
 .vscode/
+
+# Ignore media files
+/Server/media/
+/Server/qr_codes/
+
+# Ignore compiled Python files
+/Server/url_app/__pycache__/
+/Server/url_app/migrations/__pycache__/
