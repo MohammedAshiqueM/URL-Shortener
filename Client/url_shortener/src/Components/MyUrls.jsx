@@ -194,7 +194,7 @@ const MyUrls = () => {
                         {url.short_code}
                       </button>
                       <button
-                        onClick={() => {navigator.clipboard.writeText(window.location.origin + '/u/' + url.short_code)}}
+                        onClick={() => {navigator.clipboard.writeText(baseURL + 'api/' + url.short_code)}}
                         className="text-xs text-gray-500 hover:text-gray-700 mt-1"
                       >
                         Copy to clipboard

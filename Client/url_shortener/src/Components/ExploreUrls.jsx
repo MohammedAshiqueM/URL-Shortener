@@ -28,19 +28,21 @@ const ExploreUrls = () => {
     fetchPublicUrls();
   }, []);
 
-  const handleVisitUrl = async (urlId) => {
+  const handleVisitUrl = async (url) => {
     try {
-      const response = await api.get(`api/urls/${urlId}/visit/`);
-      window.open(response.data.redirect_to, '_blank');
-      
-      // Update the visit count in the UI without refetching
-      setPublicUrls(publicUrls.map(url => 
-        url.id === urlId ? { ...url, visit_count: (url.visit_count || 0) + 1 } : url
-      ));
+        const redirectUrl = `${baseURL}api/${url.short_code}/`; // No 'api/' here
+        window.open(redirectUrl, '_blank');
+        // Update the visit count in the UI
+        setPublicUrls(prevUrls =>
+        prevUrls.map(u =>
+            u.id === url.id ? { ...u, visit_count: (u.visit_count || 0) + 1 } : u
+        )
+      );
     } catch (err) {
       console.error('Error visiting URL:', err);
     }
   };
+  
 
   // Sort URLs based on current sort settings
   const sortedUrls = [...publicUrls].sort((a, b) => {
@@ -173,13 +175,13 @@ const ExploreUrls = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex flex-col">
                       <button
-                        onClick={() => handleVisitUrl(url.id)}
+                        onClick={() => handleVisitUrl(url)}
                         className="text-blue-500 hover:underline text-left"
                       >
                         {url.short_code}
                       </button>
                       <button
-                        onClick={() => {navigator.clipboard.writeText(window.location.origin + '/u/' + url.short_code)}}
+                        onClick={() => {navigator.clipboard.writeText(baseURL + 'api/' + url.short_code)}}
                         className="text-xs text-gray-500 hover:text-gray-700 mt-1"
                       >
                         Copy to clipboard
