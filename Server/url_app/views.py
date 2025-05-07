@@ -1,10 +1,11 @@
-from webbrowser import get
 from rest_framework import generics, permissions, viewsets, status
 from rest_framework.response import Response
-from rest_framework.decorators import action
+from rest_framework.decorators import action,api_view, permission_classes
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from .serializers import CustomTokenObtainSerializer, ShortenedURLSerializer, UserRegisterSerializer, UserSerializer
 from .permission import IsAdmin, IsOwnerOrAdmin
 from url_app import serializers
@@ -96,6 +97,17 @@ class ShortenedURLViewSet(viewsets.ModelViewSet):
         url.visit_count += 1
         url.save(update_fields=['visit_count'])
         return Response({'redirect_to':url.orginal_url})
+    
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def redirect_short_url(request, short_code):
+    url_obj = get_object_or_404(ShortenedUrl, short_code=short_code)
+    
+    # Increment visit count
+    url_obj.visit_count = (url_obj.visit_count or 0) + 1
+    url_obj.save()
+
+    return redirect(url_obj.orginal_url)
     
 class AdminDashboardViewSet(generics.ListAPIView):
     queryset = User.objects.all()
